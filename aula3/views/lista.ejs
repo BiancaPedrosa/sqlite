@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Alunos com EJS</title>
+</head>
+<body>
+    <h2>Lista de Alunos Registrados</h2>
+    
+    <% if (alunos.length === 0) { %>
+        <p>Nenhum aluno cadastrado ainda.</p>
+    <% } else { %>
+        <ul>
+            <% alunos.forEach(function(aluno) { %>
+                <li>
+                    ID: <%= aluno.id %> - 
+                    Nome: <%= aluno.nome %> - 
+                    Idade: <%= aluno.idade %> anos
+                </li>
+            <% }); %>
+        </ul>
+    <% } %>
+
+    <br>
+    <a href="/">Cadastrar mais alunos</a>
+</body>
+</html>
