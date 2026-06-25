@@ -1,0 +1,28 @@
+ <!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Alunos</title>
+</head>
+<body>
+
+    <h2>Lista de Alunos Cadastrados</h2>
+    <a href="/">Cadastrar Novo Aluno</a>
+    <br><br>
+
+    <ul>
+        <% alunos.forEach(aluno => { %>
+            <li style="margin-bottom: 10px;">
+                <strong><%= aluno.nome %></strong> - <%= aluno.idade %> anos
+                
+                <a href="/update/<%= aluno.id %>" style="margin-left: 15px;">Editar</a>
+
+                <form action="/delete/<%= aluno.id %>" method="POST" style="display:inline; margin-left: 10px;" onsubmit="return confirm('Tem certeza que deseja excluir?');">
+                    <button type="submit" style="color: red; cursor: pointer;">Excluir</button>
+                </form>
+            </li>
+        <% }) %>
+    </ul>
+
+</body>
+</html>

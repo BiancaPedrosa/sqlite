@@ -13,7 +13,7 @@ Antes de começar, você precisará ter instalado em sua máquina:
 
 1. Abra o terminal e navegue até a pasta do projeto:
    ```bash
-   cd /Users/bianca/Desktop/sqlite
+   cd sqlite
    ```
 2. Instale a dependência necessária (o módulo `sqlite3`):
    ```bash
