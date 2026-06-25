@@ -19,7 +19,7 @@ const db = new sqlite3.Database('./escola.db', (erro) => {
 
 // ROTA 1: Formulário
 app.get('/', (req, res) => {
-    // res.render procura na pasta 'views' pelo arquivo 'formulario.ejs'
+    // res.render procura na pasta 'views' pelo arquivo 'insert-form.ejs'
     res.render('insert_form');
 });
 
@@ -56,7 +56,7 @@ app.get('/update/:id', (req, res) => {
             console.error(err.message);
             return res.status(500).send('Erro ao buscar aluno.');
         }
-        // Garanta que o arquivo na pasta views se chama 'edita.ejs'
+        // Garanta que o arquivo na pasta views se chama 'update.ejs' e que ele está configurado para receber a variável 'aluno'
         res.render('update', { aluno });
     });
 });
@@ -66,8 +66,8 @@ app.get('/update/:id', (req, res) => {
 // ==========================================
 app.post('/update/:id', (req, res) => {
     const { id } = req.params;
-    const { nome, idade } = req.body; // Corrigido: usando 'idade' em vez de 'email'
-    const query = 'UPDATE alunos SET nome = ?, idade = ? WHERE id = ?'; // Corrigido para a tabela real
+    const { nome, idade } = req.body; // '
+    const query = 'UPDATE alunos SET nome = ?, idade = ? WHERE id = ?'; 
 
     // A ordem no array precisa ser idêntica às '?' do SQL: nome (1º), idade (2º), id (3º)
     db.run(query, [nome, idade, id], (err) => {
