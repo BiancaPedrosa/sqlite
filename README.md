@@ -42,7 +42,30 @@ Evolui o projeto para uma aplicação web local utilizando o framework **Express
 
 Introduz o uso do motor de **templates EJS**. Separa a lógica do servidor da interface visual, facilitando a criação de páginas dinâmicas renderizando arquivos `.ejs` (na pasta `views`) com os dados das tabelas.
 
-## � Como executar
+### 📁 CRUD: Aplicação Web Completa com Bootstrap
+
+Aplicação web completa com interface responsiva e profissional, implementando todas as operações de banco de dados via HTTP:
+
+- **`app.js`**: Servidor Express com 6 rotas mapeadas para as operações de CRUD (`GET /`, `POST /insert`, `GET /select`, `GET /update/:id`, `POST /update/:id`, `POST /delete/:id`).
+- **`views/insert_form.ejs`**: Formulário de cadastro de novos alunos.
+- **`views/list.ejs`**: Tabela responsiva com listagem de alunos, botões de editar e excluir com modal de confirmação.
+- **`views/update.ejs`**: Formulário de edição dos dados do aluno.
+
+**Interface construída com:**
+- [Bootstrap 5](https://getbootstrap.com/) — layout responsivo, navbar, cards e tabelas
+- [Bootstrap Icons](https://icons.getbootstrap.com/) — ícones nos botões e títulos
+- Modal de confirmação na exclusão (sem uso de `alert` nativo do navegador)
+
+**Para executar:**
+```bash
+cd CRUD
+node app.js
+```
+Acesse `http://localhost:3000` no navegador.
+
+---
+
+## 🖥️ Como executar
 
 Para rodar os arquivos, navegue até a pasta da aula desejada e utilize o comando `node` seguido do nome do script no terminal.
 
