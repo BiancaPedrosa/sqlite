@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquitetura MVC com Node.js</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --primary: #0d6efd;
+            --model-color: #198754;
+            --controller-color: #0d6efd;
+            --view-color: #dc3545;
+            --route-color: #fd7e14;
+        }
+
+        .reveal { font-family: 'Segoe UI', system-ui, sans-serif; }
+        .reveal h1, .reveal h2, .reveal h3 { font-weight: 700; text-transform: none; letter-spacing: -.5px; }
+        .reveal h2 { color: var(--primary); }
+        .reveal pre { box-shadow: 0 4px 20px rgba(0,0,0,.15); border-radius: 8px; width: 100%; }
+        .reveal code { font-family: 'Fira Code', 'Cascadia Code', monospace; }
+        .reveal .slides section { padding: 20px 40px; }
+
+        /* Crachás das camadas */
+        .badge-layer {
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: .85em;
+            letter-spacing: .5px;
+            margin-bottom: 12px;
+        }
+        .badge-model      { background: #d1e7dd; color: #0a3622; }
+        .badge-controller { background: #cfe2ff; color: #052c65; }
+        .badge-view       { background: #f8d7da; color: #58151c; }
+        .badge-route      { background: #ffe5d0; color: #6e2d00; }
+
+        /* Diagrama de fluxo */
+        .flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .flow-box {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: .85em;
+            text-align: center;
+            min-width: 110px;
+            line-height: 1.3;
+        }
+        .flow-arrow {
+            font-size: 1.4em;
+            color: #adb5bd;
+            margin: 0 4px;
+        }
+        .box-browser    { background: #f8f9fa; border: 2px solid #dee2e6; color: #495057; }
+        .box-route      { background: #ffe5d0; border: 2px solid #fd7e14; color: #6e2d00; }
+        .box-controller { background: #cfe2ff; border: 2px solid #0d6efd; color: #052c65; }
+        .box-model      { background: #d1e7dd; border: 2px solid #198754; color: #0a3622; }
+        .box-db         { background: #f3e8ff; border: 2px solid #9c27b0; color: #3b0063; }
+        .box-view       { background: #f8d7da; border: 2px solid #dc3545; color: #58151c; }
+
+        /* Estrutura de pastas */
+        .folder-tree {
+            font-family: 'Fira Code', monospace;
+            font-size: .82em;
+            text-align: left;
+            display: inline-block;
+            line-height: 1.9;
+        }
+        .folder-tree .dir   { color: #0d6efd; font-weight: 700; }
+        .folder-tree .model { color: #198754; font-weight: 700; }
+        .folder-tree .ctrl  { color: #0d6efd; font-weight: 700; }
+        .folder-tree .view  { color: #dc3545; font-weight: 700; }
+        .folder-tree .route { color: #fd7e14; font-weight: 700; }
+        .folder-tree .entry { color: #495057; }
+
+        /* Comparação */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            text-align: left;
+            font-size: .78em;
+        }
+        .compare-card {
+            border-radius: 10px;
+            padding: 16px;
+        }
+        .compare-card h4 { margin: 0 0 8px; font-size: 1em; }
+        .compare-card ul { margin: 0; padding-left: 18px; }
+        .compare-card li { margin-bottom: 4px; }
+        .card-sem { background: #fff3cd; border: 1.5px solid #ffc107; }
+        .card-com { background: #d1e7dd; border: 1.5px solid #198754; }
+
+        /* Responsabilidades */
+        .resp-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            font-size: .78em;
+        }
+        .resp-card {
+            border-radius: 10px;
+            padding: 16px 14px;
+        }
+        .resp-card h4 { margin: 0 0 10px; font-size: 1em; }
+        .resp-card ul { margin: 0; padding-left: 16px; }
+        .resp-card li { margin-bottom: 6px; }
+        .rc-model { background: #d1e7dd; border: 2px solid #198754; }
+        .rc-ctrl  { background: #cfe2ff; border: 2px solid #0d6efd; }
+        .rc-view  { background: #f8d7da; border: 2px solid #dc3545; }
+
+        .highlight-line { background: rgba(255,235,59,.3); display: block; }
+        .slide-number { bottom: 16px !important; right: 16px !important; font-size: .7em !important; }
+        .reveal .progress { color: var(--primary); }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+    <!-- SLIDE 1: CAPA -->
+    <section>
+        <div style="padding: 20px 0">
+            <div style="font-size:3.5em; margin-bottom: 12px;">🏗️</div>
+            <h1 style="font-size:2em; color:#212529;">Arquitetura <span style="color:var(--primary)">MVC</span></h1>
+            <p style="color:#6c757d; font-size:.9em; margin-top: 8px;">
+                Model · View · Controller
+            </p>
+            <hr style="border-color:#dee2e6; margin: 24px auto; width: 80px;">
+            <p style="color:#6c757d; font-size:.75em;">
+                Exemplo prático com <strong>Node.js · Express · SQLite · EJS</strong>
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: O PROBLEMA -->
+    <section>
+        <h2>O problema: tudo no mesmo lugar</h2>
+        <p style="font-size:.8em; color:#6c757d; margin-bottom: 16px;">
+            No CRUD inicial, <code>app.js</code> fazia <em>tudo</em> ao mesmo tempo:
+        </p>
+        <pre><code class="language-js" data-trim data-line-numbers="1-4|6-9|11-17">
+// 🔴 Conexão com banco
+const db = new sqlite3.Database('./escola.db', ...)
+
+// 🔴 Lógica de negócio
+app.get('/select', (req, res) => {
+    db.all('SELECT * FROM alunos', (erro, linhas) => {
+
+        // 🔴 Resposta HTTP e renderização
+        res.render('list', { alunos: linhas });
+    });
+});
+
+// 🔴 Mais 5 rotas com a mesma mistura...
+app.post('/insert', ...)
+app.post('/update/:id', ...)
+app.post('/delete/:id', ...)
+        </code></pre>
+        <p style="font-size:.75em; color:#dc3545; margin-top: 12px;">
+            ❌ Difícil de manter, testar e escalar
+        </p>
+    </section>
+
+    <!-- SLIDE 3: O QUE É MVC -->
+    <section>
+        <h2>O que é MVC?</h2>
+        <p style="font-size:.82em; color:#495057; margin-bottom: 24px;">
+            Um padrão de projeto que <strong>separa responsabilidades</strong> em três camadas:
+        </p>
+        <div class="resp-grid">
+            <div class="resp-card rc-model">
+                <h4>🗄️ Model</h4>
+                <ul>
+                    <li>Acessa o banco de dados</li>
+                    <li>Executa as queries SQL</li>
+                    <li>Não sabe nada sobre HTTP</li>
+                </ul>
+            </div>
+            <div class="resp-card rc-ctrl">
+                <h4>⚙️ Controller</h4>
+                <ul>
+                    <li>Recebe a requisição</li>
+                    <li>Chama o Model</li>
+                    <li>Decide o que responder</li>
+                </ul>
+            </div>
+            <div class="resp-card rc-view">
+                <h4>🖥️ View</h4>
+                <ul>
+                    <li>Exibe os dados</li>
+                    <li>Apenas HTML + template</li>
+                    <li>Não acessa banco</li>
+                </ul>
+            </div>
+        </div>
+        <p style="font-size:.75em; color:#6c757d; margin-top: 20px;">
+            + <strong style="color:var(--route-color)">Routes</strong>: camada extra que direciona cada URL para o Controller certo
+        </p>
+    </section>
+
+    <!-- SLIDE 4: ESTRUTURA DE PASTAS -->
+    <section>
+        <h2>Estrutura de pastas</h2>
+        <div class="folder-tree">
+            <span class="dir">MVC/</span><br>
+            &nbsp;&nbsp;├── <span class="entry">app.js</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em style="color:#adb5bd">← ponto de entrada</em><br>
+            &nbsp;&nbsp;├── <span class="dir">models/</span><br>
+            &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── <span class="model">alunoModel.js</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em style="color:#adb5bd">← queries SQL</em><br>
+            &nbsp;&nbsp;├── <span class="dir">controllers/</span><br>
+            &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── <span class="ctrl">alunoController.js</span> &nbsp;<em style="color:#adb5bd">← lógica HTTP</em><br>
+            &nbsp;&nbsp;├── <span class="dir">routes/</span><br>
+            &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── <span class="route">alunoRoutes.js</span> &nbsp;&nbsp;&nbsp;&nbsp;<em style="color:#adb5bd">← mapeamento de URLs</em><br>
+            &nbsp;&nbsp;└── <span class="dir">views/</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="view">insert_form.ejs</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="view">list.ejs</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="view">update.ejs</span>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: FLUXO COMPLETO -->
+    <section>
+        <h2>Fluxo de uma requisição</h2>
+        <p style="font-size:.78em; color:#6c757d; margin-bottom: 20px;">
+            O que acontece quando o usuário acessa <code>/alunos</code>:
+        </p>
+        <div class="flow">
+            <div class="flow-box box-browser">🌐<br>Navegador</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box box-route">📍<br>Route</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box box-controller">⚙️<br>Controller</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box box-model">🗄️<br>Model</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-box box-db">💾<br>SQLite</div>
+        </div>
+        <div class="flow" style="margin-top: 0;">
+            <div class="flow-box box-browser">🌐<br>Navegador</div>
+            <div class="flow-arrow">←</div>
+            <div class="flow-box box-view">🖥️<br>View (.ejs)</div>
+            <div class="flow-arrow">←</div>
+            <div class="flow-box box-controller">⚙️<br>Controller</div>
+            <div class="flow-arrow">←</div>
+            <div class="flow-box box-model">🗄️<br>Model</div>
+            <div class="flow-arrow">←</div>
+            <div class="flow-box box-db">💾<br>SQLite</div>
+        </div>
+        <p style="font-size:.72em; color:#6c757d; margin-top: 8px;">
+            ↑ ida &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↑ volta
+        </p>
+    </section>
+
+    <!-- SLIDE 6: APP.JS -->
+    <section>
+        <div class="badge-layer badge-route">Ponto de entrada</div>
+        <h2 style="margin-top: 4px;">app.js</h2>
+        <p style="font-size:.78em; color:#6c757d; margin-bottom: 12px;">
+            Só inicializa o servidor e importa as rotas. Nada mais.
+        </p>
+        <pre><code class="language-js" data-trim data-line-numbers>
+const express = require('express');
+const path = require('path');
+
+const app = express();
+const PORT = 3000;
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.urlencoded({ extended: true }));
+
+// Delega TUDO para o arquivo de rotas
+const alunoRoutes = require('./routes/alunoRoutes');
+app.use('/', alunoRoutes);
+
+app.listen(PORT, () => console.log(`Servidor em http://localhost:${PORT}`));
+        </code></pre>
+    </section>
+
+    <!-- SLIDE 7: ROUTES -->
+    <section>
+        <div class="badge-layer badge-route">Routes — alunoRoutes.js</div>
+        <h2 style="margin-top: 4px;">Mapeamento de URLs</h2>
+        <p style="font-size:.78em; color:#6c757d; margin-bottom: 12px;">
+            Define <em>qual URL</em> chama <em>qual função</em> do Controller.
+        </p>
+        <pre><code class="language-js" data-trim data-line-numbers="1-3|5-10">
+const express = require('express');
+const router = express.Router();
+const alunoController = require('../controllers/alunoController');
+
+router.get('/',           alunoController.showForm);
+router.post('/insert',    alunoController.create);
+router.get('/alunos',     alunoController.list);
+router.get('/update/:id', alunoController.showEdit);
+router.post('/update/:id',alunoController.update);
+router.post('/delete/:id',alunoController.remove);
+
+module.exports = router;
+        </code></pre>
+        <p style="font-size:.75em; color:#6c757d; margin-top: 10px;">
+            Nenhuma lógica aqui — só o "endereço" e a função responsável por ele.
+        </p>
+    </section>
+
+    <!-- SLIDE 8: MODEL -->
+    <section>
+        <div class="badge-layer badge-model">Model — alunoModel.js</div>
+        <h2 style="margin-top: 4px;">Acesso ao banco de dados</h2>
+        <p style="font-size:.78em; color:#6c757d; margin-bottom: 12px;">
+            Só sabe falar com o SQLite. Não conhece <code>req</code>, <code>res</code> ou HTML.
+        </p>
+        <pre><code class="language-js" data-trim data-line-numbers="1-6|8-14|16">
+const sqlite3 = require('sqlite3').verbose();
+
+const db = new sqlite3.Database('./escola.db', (erro) => {
+    if (erro) return console.error(erro.message);
+    db.run(`CREATE TABLE IF NOT EXISTS alunos (...)`);
+});
+
+const getAll    = (cb) => db.all('SELECT * FROM alunos', cb);
+const getById   = (id, cb) => db.get('SELECT * FROM alunos WHERE id = ?', [id], cb);
+const insert    = (nome, idade, cb) => db.run('INSERT INTO alunos (nome, idade) VALUES (?, ?)', [nome, idade], cb);
+const update    = (nome, idade, id, cb) => db.run('UPDATE alunos SET nome = ?, idade = ? WHERE id = ?', [nome, idade, id], cb);
+const remove    = (id, cb) => db.run('DELETE FROM alunos WHERE id = ?', [id], cb);
+
+module.exports = { getAll, getById, insert, update, remove };
+        </code></pre>
+    </section>
+
+    <!-- SLIDE 9: CALLBACK EXPLICADO -->
+    <section>
+        <div class="badge-layer badge-model">Model — Callback</div>
+        <h2 style="margin-top: 4px;">Por que usar callback?</h2>
+        <p style="font-size:.78em; color:#6c757d; margin-bottom: 14px;">
+            O SQLite é <strong>assíncrono</strong>: a query não retorna um valor — ela avisa quando terminar.
+        </p>
+        <pre><code class="language-js" data-trim data-line-numbers="1-2|4-9|11-16">
+// O model só executa e "avisa" quem chamou:
+const getAll = (callback) => db.all('SELECT * FROM alunos', callback);
+
+// O controller passa a função de callback:
+Aluno.getAll((erro, alunos) => {
+    //          ↑       ↑
+    //        erro    dados
+    res.render('list', { alunos });
+});
+
+// É como dizer:
+// "Execute esse SELECT e, quando terminar,
+//  chame esta função com o resultado."
+//
+// O callback recebe sempre: (erro, resultado)
+// Se erro === null → tudo certo!
+        </code></pre>
+    </section>
+
+    <!-- SLIDE 10: CONTROLLER -->
+    <section>
+        <div class="badge-layer badge-controller">Controller — alunoController.js</div>
+        <h2 style="margin-top: 4px;">Lógica de requisição e resposta</h2>
+        <p style="font-size:.78em; color:#6c757d; margin-bottom: 12px;">
+            Liga o Model à View. Recebe o pedido, busca os dados, decide o que exibir.
+        </p>
+        <pre><code class="language-js" data-trim data-line-numbers="1|3-8|10-15|17-22">
+const Aluno = require('../models/alunoModel');
+
+// Exibe o formulário de cadastro
+const showForm = (req, res) => res.render('insert_form');
+
+// Lista todos os alunos
+const list = (req, res) => {
+    Aluno.getAll((erro, alunos) => {
+        if (erro) return res.status(500).send('Erro ao buscar.');
+        res.render('list', { alunos });   // → chama a View
+    });
+};
+
+// Cadastra um novo aluno
+const create = (req, res) => {
+    const { nome, idade } = req.body;
+    Aluno.insert(nome, idade, (erro) => {
+        if (erro) return res.status(500).send('Erro ao salvar.');
+        res.redirect('/alunos');
+    });
+};
+
+module.exports = { showForm, list, create, /* ... */ };
+        </code></pre>
+    </section>
+
+    <!-- SLIDE 11: VIEW -->
+    <section>
+        <div class="badge-layer badge-view">View — list.ejs</div>
+        <h2 style="margin-top: 4px;">Interface para o usuário</h2>
+        <p style="font-size:.78em; color:#6c757d; margin-bottom: 12px;">
+            Recebe os dados prontos do Controller e só os exibe. Sem lógica de banco.
+        </p>
+        <pre><code class="language-html" data-trim data-line-numbers="1-3|5-11">
+&lt;!-- O Controller injetou a variável 'alunos' --&gt;
+&lt;p&gt;Total: &lt;%= alunos.length %&gt; alunos&lt;/p&gt;
+
+&lt;% alunos.forEach(aluno =&gt; { %&gt;
+    &lt;tr&gt;
+        &lt;td&gt;&lt;%= aluno.nome %&gt;&lt;/td&gt;
+        &lt;td&gt;&lt;%= aluno.idade %&gt; anos&lt;/td&gt;
+        &lt;td&gt;
+            &lt;a href="/update/&lt;%= aluno.id %&gt;"&gt;Editar&lt;/a&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+&lt;% }) %&gt;
+        </code></pre>
+        <p style="font-size:.75em; color:#6c757d; margin-top: 10px;">
+            <code>&lt;%= %&gt;</code> imprime o valor &nbsp;|&nbsp; <code>&lt;% %&gt;</code> executa lógica JS (sem imprimir)
+        </p>
+    </section>
+
+    <!-- SLIDE 12: SEM x COM MVC -->
+    <section>
+        <h2>Sem MVC vs. Com MVC</h2>
+        <div class="compare-grid" style="margin-top: 20px;">
+            <div class="compare-card card-sem">
+                <h4>❌ Sem MVC (CRUD)</h4>
+                <ul>
+                    <li>Tudo em um único <code>app.js</code></li>
+                    <li>SQL misturado com rotas</li>
+                    <li>Difícil de encontrar bugs</li>
+                    <li>Para mudar o banco, mexe em tudo</li>
+                    <li>Impossível testar isolado</li>
+                </ul>
+            </div>
+            <div class="compare-card card-com">
+                <h4>✅ Com MVC</h4>
+                <ul>
+                    <li>Cada arquivo tem uma função clara</li>
+                    <li>SQL só no Model</li>
+                    <li>Bug de query? Vai direto ao Model</li>
+                    <li>Troca o banco sem tocar no Controller</li>
+                    <li>Cada camada pode ser testada sozinha</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 13: RESUMO FINAL -->
+    <section>
+        <h2>Resumo</h2>
+        <table style="font-size:.78em; width:100%; border-collapse:collapse; margin-top: 16px;">
+            <thead>
+                <tr style="background:#f8f9fa;">
+                    <th style="padding:10px 14px; text-align:left; border-bottom:2px solid #dee2e6;">Arquivo</th>
+                    <th style="padding:10px 14px; text-align:left; border-bottom:2px solid #dee2e6;">Camada</th>
+                    <th style="padding:10px 14px; text-align:left; border-bottom:2px solid #dee2e6;">Responsabilidade</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="padding:10px 14px; border-bottom:1px solid #f1f3f5;"><code>app.js</code></td>
+                    <td style="padding:10px 14px; border-bottom:1px solid #f1f3f5;">Entrada</td>
+                    <td style="padding:10px 14px; border-bottom:1px solid #f1f3f5;">Iniciar servidor e importar rotas</td>
+                </tr>
+                <tr style="background:#fff8f0;">
+                    <td style="padding:10px 14px; border-bottom:1px solid #f1f3f5;"><code style="color:var(--route-color)">alunoRoutes.js</code></td>
+                    <td style="padding:10px 14px; border-bottom:1px solid #f1f3f5;"><strong style="color:var(--route-color)">Routes</strong></td>
+                    <td style="padding:10px 14px; border-bottom:1px solid #f1f3f5;">Mapear URL → função do controller</td>
+                </tr>
+                <tr style="background:#f0fff4;">
+                    <td style="padding:10px 14px; border-bottom:1px solid #f1f3f5;"><code style="color:var(--model-color)">alunoModel.js</code></td>
+                    <td style="padding:10px 14px; border-bottom:1px solid #f1f3f5;"><strong style="color:var(--model-color)">Model</strong></td>
+                    <td style="padding:10px 14px; border-bottom:1px solid #f1f3f5;">Queries SQL e conexão com banco</td>
+                </tr>
+                <tr style="background:#f0f7ff;">
+                    <td style="padding:10px 14px; border-bottom:1px solid #f1f3f5;"><code style="color:var(--controller-color)">alunoController.js</code></td>
+                    <td style="padding:10px 14px; border-bottom:1px solid #f1f3f5;"><strong style="color:var(--controller-color)">Controller</strong></td>
+                    <td style="padding:10px 14px; border-bottom:1px solid #f1f3f5;">Receber req, chamar model, renderizar</td>
+                </tr>
+                <tr style="background:#fff5f5;">
+                    <td style="padding:10px 14px;"><code style="color:var(--view-color)">*.ejs</code></td>
+                    <td style="padding:10px 14px;"><strong style="color:var(--view-color)">View</strong></td>
+                    <td style="padding:10px 14px;">Exibir dados em HTML para o usuário</td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="font-size:.72em; color:#6c757d; margin-top: 20px;">
+            Use <kbd>←</kbd> <kbd>→</kbd> para navegar · <kbd>F</kbd> para tela cheia · <kbd>Esc</kbd> para visão geral
+        </p>
+    </section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        slideNumber: 'c/t',
+        progress: true,
+        transition: 'slide',
+        transitionSpeed: 'fast',
+        plugins: [RevealHighlight, RevealNotes]
+    });
+</script>
+</body>
+</html>
