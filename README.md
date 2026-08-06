@@ -63,6 +63,42 @@ node app.js
 ```
 Acesse `http://localhost:3000` no navegador.
 
+### 📁 MVC: Arquitetura Model-View-Controller
+
+Reorganiza o CRUD de alunos em camadas separadas, seguindo o padrão **MVC**:
+
+- **`app.js`**: Servidor Express, configura o EJS como view engine e delega as rotas para `alunoRoutes`.
+- **`models/alunoModel.js`**: Camada de acesso a dados — funções `insert`, `getAll`, `getById`, `update` e `remove` que conversam diretamente com o SQLite.
+- **`controllers/alunoController.js`**: Camada de lógica — recebe as requisições, chama o model e decide qual view renderizar ou para onde redirecionar.
+- **`routes/alunoRoutes.js`**: Mapeia as rotas HTTP (`/`, `/insert`, `/alunos`, `/update/:id`, `/delete/:id`) para as funções do controller.
+- **`views/`**: Templates EJS (`insert_form`, `list`, `update`) reaproveitados do CRUD anterior.
+
+**Para executar:**
+```bash
+cd MVC
+node app.js
+```
+Acesse `http://localhost:3000` no navegador.
+
+### 📁 Revisao-contato: Gabarito da revisão aplicada em aula
+
+Gabarito do exercício de revisão de cadastro de contatos proposto em aula, cobrindo os conceitos de Express + SQLite + EJS com uma tabela de **contatos** (nome, telefone e email):
+
+- **`server.js`**: Servidor Express com duas rotas — `GET /` (lista os contatos) e `POST /contatos` (insere um novo contato).
+- **`db.js`**: Conexão com o banco `contatos.db` e criação da tabela `contatos` (`CREATE TABLE IF NOT EXISTS`).
+- **`views/index.ejs`**: Formulário de cadastro e listagem dos contatos já inseridos.
+- **`public/style.css`**: Estilização da página.
+
+Diferente da pasta `MVC`, aqui a lógica fica concentrada direto no `server.js` e `db.js`, sem separação em controllers/models — a versão mais direta e enxuta do exercício.
+
+**Para executar:**
+```bash
+cd Revisao-contato
+npm install
+node server.js
+```
+Acesse `http://localhost:3000` no navegador.
+
 ---
 
 ## 🖥️ Como executar
