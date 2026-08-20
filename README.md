@@ -99,7 +99,7 @@ node server.js
 ```
 Acesse `http://localhost:3000` no navegador.
 
-### 📁 Revisao-contato-MVC: Gabarito da refatoração para MVC
+### 📁 refatoracao-contato-mvc: Gabarito da refatoração para MVC
 
 Refatoração do exercício `Revisao-contato`, saindo do monolito (`server.js` + `db.js`) para o padrão **MVC**, seguindo a mesma separação de camadas usada na pasta `MVC`:
 
@@ -111,7 +111,7 @@ Refatoração do exercício `Revisao-contato`, saindo do monolito (`server.js` +
 
 **Para executar:**
 ```bash
-cd Revisao-contato-MVC
+cd refatoracao-contato-mvc
 npm install
 node server.js
 ```
