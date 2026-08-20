@@ -99,6 +99,24 @@ node server.js
 ```
 Acesse `http://localhost:3000` no navegador.
 
+### 📁 Revisao-contato-MVC: Gabarito da refatoração para MVC
+
+Refatoração do exercício `Revisao-contato`, saindo do monolito (`server.js` + `db.js`) para o padrão **MVC**, seguindo a mesma separação de camadas usada na pasta `MVC`:
+
+- **`server.js`**: Servidor Express, configura o EJS como view engine e delega as rotas para `contatoRoutes`.
+- **`models/contatoModel.js`**: Camada de acesso a dados — funções que conversam diretamente com o SQLite (`contatos.db`).
+- **`controllers/contatoController.js`**: Camada de lógica — recebe as requisições, chama o model e decide qual view renderizar ou para onde redirecionar.
+- **`routes/contatoRoutes.js`**: Mapeia as rotas HTTP para as funções do controller.
+- **`views/index.ejs`** e **`public/style.css`**: Reaproveitados da pasta `Revisao-contato`.
+
+**Para executar:**
+```bash
+cd Revisao-contato-MVC
+npm install
+node server.js
+```
+Acesse `http://localhost:3000` no navegador.
+
 ---
 
 ## 🖥️ Como executar
