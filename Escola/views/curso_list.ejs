@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Cursos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f2f5; }
+        .navbar-brand { font-weight: 700; letter-spacing: .5px; }
+        .card { border: none; border-radius: 12px; }
+        .card-header { border-radius: 12px 12px 0 0 !important; }
+        .table th { font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; color: #6c757d; border-bottom-width: 1px; }
+        .table td { vertical-align: middle; }
+        .badge-id { font-size: .7rem; background-color: #e9ecef; color: #495057; padding: 3px 7px; border-radius: 20px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-dark bg-primary shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="<%= base %>/"><i class="bi bi-mortarboard-fill me-2"></i>Gestão de Cursos</a>
+            <a href="<%= base %>/" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-journal-plus me-1"></i>Novo Curso
+            </a>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white border-bottom py-3 d-flex align-items-center justify-content-between">
+                <h5 class="mb-0 text-primary"><i class="bi bi-journals me-2"></i>Cursos Cadastrados</h5>
+                <span class="badge bg-primary rounded-pill"><%= cursos.length %> curso<%= cursos.length !== 1 ? 's' : '' %></span>
+            </div>
+            <div class="card-body p-0">
+                <% if (cursos.length === 0) { %>
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                        <p class="mb-0">Nenhum curso cadastrado ainda.</p>
+                        <a href="<%= base %>/" class="btn btn-primary btn-sm mt-3">Cadastrar primeiro curso</a>
+                    </div>
+                <% } else { %>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">#</th>
+                                    <th>Nome</th>
+                                    <th>Carga Horária</th>
+                                    <th class="text-end pe-4">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% cursos.forEach(curso => { %>
+                                    <tr>
+                                        <td class="ps-4"><span class="badge-id"><%= curso.id %></span></td>
+                                        <td class="fw-semibold"><%= curso.nome %></td>
+                                        <td><%= curso.cargaHoraria %>h</td>
+                                        <td class="text-end pe-4">
+                                            <a href="<%= base %>/update/<%= curso.id %>" class="btn btn-outline-secondary btn-sm me-1">
+                                                <i class="bi bi-pencil-fill"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger btn-sm"
+                                                    data-bs-toggle="modal" data-bs-target="#modalExcluir"
+                                                    data-id="<%= curso.id %>" data-nome="<%= curso.nome %>">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação de exclusão -->
+    <div class="modal fade" id="modalExcluir" tabindex="-1" aria-labelledby="modalExcluirLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title text-danger" id="modalExcluirLabel">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar exclusão
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Tem certeza que deseja excluir o curso <strong id="nomeCurso"></strong>? Esta ação não pode ser desfeita.</p>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form id="formExcluir" method="POST">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash-fill me-1"></i>Excluir
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const basePath = "<%= base %>";
+        const modalExcluir = document.getElementById('modalExcluir');
+        modalExcluir.addEventListener('show.bs.modal', (event) => {
+            const btn = event.relatedTarget;
+            document.getElementById('nomeCurso').textContent = btn.dataset.nome;
+            document.getElementById('formExcluir').action = `${basePath}/delete/${btn.dataset.id}`;
+        });
+    </script>
+</body>
+</html>
