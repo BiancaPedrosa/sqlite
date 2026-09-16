@@ -80,43 +80,6 @@ node app.js
 ```
 Acesse `http://localhost:3000` no navegador.
 
-### 📁 Revisao-contato: Gabarito da revisão aplicada em aula
-
-Gabarito do exercício de revisão de cadastro de contatos proposto em aula, cobrindo os conceitos de Express + SQLite + EJS com uma tabela de **contatos** (nome, telefone e email):
-
-- **`server.js`**: Servidor Express com duas rotas — `GET /` (lista os contatos) e `POST /contatos` (insere um novo contato).
-- **`db.js`**: Conexão com o banco `contatos.db` e criação da tabela `contatos` (`CREATE TABLE IF NOT EXISTS`).
-- **`views/index.ejs`**: Formulário de cadastro e listagem dos contatos já inseridos.
-- **`public/style.css`**: Estilização da página.
-
-Diferente da pasta `MVC`, aqui a lógica fica concentrada direto no `server.js` e `db.js`, sem separação em controllers/models — a versão mais direta e enxuta do exercício.
-
-**Para executar:**
-```bash
-cd Revisao-contato
-npm install
-node server.js
-```
-Acesse `http://localhost:3000` no navegador.
-
-### 📁 refatoracao-contato-mvc: Gabarito da refatoração para MVC
-
-Refatoração do exercício `Revisao-contato`, saindo do monolito (`server.js` + `db.js`) para o padrão **MVC**, seguindo a mesma separação de camadas usada na pasta `MVC`:
-
-- **`server.js`**: Servidor Express, configura o EJS como view engine e delega as rotas para `contatoRoutes`.
-- **`models/contatoModel.js`**: Camada de acesso a dados — funções que conversam diretamente com o SQLite (`contatos.db`).
-- **`controllers/contatoController.js`**: Camada de lógica — recebe as requisições, chama o model e decide qual view renderizar ou para onde redirecionar.
-- **`routes/contatoRoutes.js`**: Mapeia as rotas HTTP para as funções do controller.
-- **`views/index.ejs`** e **`public/style.css`**: Reaproveitados da pasta `Revisao-contato`.
-
-**Para executar:**
-```bash
-cd refatoracao-contato-mvc
-npm install
-node server.js
-```
-Acesse `http://localhost:3000` no navegador.
-
 ---
 
 ## 🖥️ Como executar
